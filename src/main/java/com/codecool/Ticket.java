@@ -1,12 +1,12 @@
 package com.codecool;
 
-public class Tickets {
+public class Ticket {
     public static int currentID = 0;
     public int ID;
-    public Customers customer;
+    public Customer customer;
     public boolean resolved;
 
-    public Tickets(Customers customer){
+    public Ticket(Customer customer){
         this.customer = customer;
         this.ID = currentID++;
         this.resolved = false;
