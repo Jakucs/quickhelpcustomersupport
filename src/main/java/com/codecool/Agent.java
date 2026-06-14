@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Agent {
+    String name;
     List<Ticket> tickets;
     int successfulTickets;
     int allTickets;
@@ -21,33 +22,38 @@ public class Agent {
         this.maxCallbacksPerTicket = maxCallbacksPerTicket;
     }
 
+    public Report createReport(){
+        Report report = new Report(name, successfulTickets, allTickets, callbacksLeft);
+        return report;
+    }
+
 
     public void addTicket(Ticket ticket){
         this.tickets.add(ticket);
     }
-
     public void doWorkDay(){
         for(Ticket t : tickets){
-            int attemptsForThisTicket = 0;
+            int reattemptsPerTicket = 0;
             boolean result = attempt(t);
             if(result){
-                t.resolved=true;
                 successfulTickets++;
+                callbacksLeft--;
+                t.resolved=true;
                 continue;
             }
-            while (!result && attemptsForThisTicket < maxCallbacksPerTicket && callbacksLeft>0){
+            while (!result && callbacksLeft>0 && reattemptsPerTicket<maxCallbacksPerTicket){
+                reattemptsPerTicket++;
+                    callbacksLeft--;
                 result = attempt(t);
-                callbacksLeft--;
-                attemptsForThisTicket++;
                 if(result){
-                    t.resolved=true;
                     successfulTickets++;
+                    t.resolved=true;
                     break;
                 }
             }
         }
+        //maybe can we call the createReport method over the day?
     }
-
     public boolean attempt(Ticket ticket){
         int randomNumber = random.nextInt(0, 10);
         if(randomNumber>6){
