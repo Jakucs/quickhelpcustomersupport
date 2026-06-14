@@ -8,15 +8,17 @@ public class Agent {
     int successfulTickets;
     int allTickets;
     int callbacksLeft;
+    int maxCallbacksPerTicket;
 
 
     Random random = new Random();
 
-    public Agent(List<Ticket> tickets, int allTickets, int callbacksLeft){
+    public Agent(List<Ticket> tickets, int allTickets, int callbacksLeft, int maxCallbacksPerTicket){
         this.tickets = tickets;
         this.successfulTickets = 0;
         this.allTickets = allTickets;
         this.callbacksLeft = callbacksLeft;
+        this.maxCallbacksPerTicket = maxCallbacksPerTicket;
     }
 
 
@@ -26,14 +28,21 @@ public class Agent {
 
     public void doWorkDay(){
         for(Ticket t : tickets){
-            if(!t.resolved && callbacksLeft>0){
-                boolean successfulCall = attempt(t);
+            int attemptsForThisTicket = 0;
+            boolean result = attempt(t);
+            if(result){
+                t.resolved=true;
+                successfulTickets++;
+                continue;
+            }
+            while (!result && attemptsForThisTicket < maxCallbacksPerTicket && callbacksLeft>0){
+                result = attempt(t);
                 callbacksLeft--;
-                if(successfulCall){
+                attemptsForThisTicket++;
+                if(result){
                     t.resolved=true;
                     successfulTickets++;
-                }else if(callbacksLeft>0){
-                    attempt(t);
+                    break;
                 }
             }
         }
